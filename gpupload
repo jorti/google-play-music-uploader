@@ -1,7 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # Maintainer Dan Pilch <dan@ctrlengineering.com>
 # Description: Upload music to Google Music Lazily
-# -*- encoding: utf8 -*-
 
 from concurrent.futures import ThreadPoolExecutor
 import threading
@@ -9,10 +8,6 @@ from gmusicapi import Musicmanager
 import argparse
 import sys
 import os
-
-# Set encoding to utf8 to fix filename encodings
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 class GoogleMusicUpload(threading.Thread):
     def __init__(self, thread_pool):
@@ -30,7 +25,7 @@ class GoogleMusicUpload(threading.Thread):
                 future = executor.submit(self.upload, f)
 
     def upload(self, f):
-        print "Found: {0}".format(f)
+        print("Found: {0}".format(f))
         try:
             self.client.upload(str(f), transcode_quality="320k", enable_matching=True)
 
@@ -41,7 +36,7 @@ class GoogleMusicUpload(threading.Thread):
         
         # Recursively look for files in subdirectories... Respect, walk \m/
         if recurse:
-            print "recursing into directories to find music"
+            print("recursing into directories to find music")
             found_files = []
             for root, dirs, files in os.walk(self.cwd):
                 for f in files:
@@ -50,7 +45,7 @@ class GoogleMusicUpload(threading.Thread):
 
         else:
             # Just look in the current directory
-            print "looking in the current directory for music"
+            print("looking in the current directory for music")
             found_files = [each for each in os.listdir(self.cwd) if each.endswith(self.wanted_filetypes)]
         
         return found_files
@@ -69,7 +64,7 @@ def main():
     args = parser.parse_args()
 
     run = GoogleMusicUpload(thread_pool=args.threads)
-    print "Starting GooglePlay Music Uploader"
+    print("Starting GooglePlay Music Uploader")
 
     if args.authenticate:
         run.authenticate()
@@ -79,7 +74,7 @@ def main():
     music = run.find_music(args.recurse)
 
     if len(music) < 1:
-        print "No Files to upload"
+        print("No Files to upload")
         return
 
     if args.threads >= 1:
@@ -87,7 +82,7 @@ def main():
     else:
         run.upload(music)
 
-    print "Finished"
+    print("Finished")
 
 if __name__ == "__main__":
     main()
